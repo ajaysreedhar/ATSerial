@@ -1,7 +1,7 @@
 # ATSerial
 ### v0.1.0
 
-A library for Arduino to communicate with compatible shields with AT commands
+Arduino library for serial communication with compatible shields over AT commands.
 
 ### License
 ATSerial library is released under MIT License
