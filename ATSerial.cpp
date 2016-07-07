@@ -28,7 +28,6 @@
  * Checks for the substring in the response received from the device.
  *
  * @param s the substring to be checked
- *
  * @return true if the provided substring is found in the response, else false
  */
 bool ATSerial::_checkResponse(String s) {
@@ -61,9 +60,9 @@ ATSerial::ATSerial(void) {
 /**
  * Overrides the default parameters.
  *
- * @param uint16_t rx   the RX pin
- * @param uint16_t tx   the TX pin
- * @param long baud     BAUD rate
+ * @param rx   the RX pin
+ * @param tx   the TX pin
+ * @param baud BAUD rate
  */
 ATSerial::ATSerial(uint16_t rx, uint16_t tx, long baud) {
   _uart = new SoftwareSerial(rx, tx);

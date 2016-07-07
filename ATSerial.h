@@ -50,7 +50,6 @@ class ATSerial {
      * Checks for the substring in the response received from the device.
      *
      * @param s the substring to be checked
-     *
      * @return true if the provided substring is found in the response, else false
      */
     bool _checkResponse(String);
