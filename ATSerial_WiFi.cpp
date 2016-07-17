@@ -112,7 +112,7 @@ bool ATSerial_WiFi::setMultiCipmux(void) {
  * @param port the port number
  * @return true if started successfully, false otherwise
  */
-bool ATSerial_WiFi::startTcpServer(uint16_t port) {
+bool ATSerial_WiFi::tcpServer(uint16_t port) {
   if (!setMultiCipmux()) return false;
 
   char s[64];

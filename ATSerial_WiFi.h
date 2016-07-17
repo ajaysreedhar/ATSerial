@@ -80,7 +80,7 @@ class ATSerial_WiFi: public ATSerial {
      * @param port the port number
      * @return true if started successfully, false otherwise
      */
-    bool startTcpServer(uint16_t);
+    bool tcpServer(uint16_t);
 };
 
 #endif

@@ -25,7 +25,7 @@ void setup() {
   }
 
   // Start the TCP server and listen port 8505
-  if (wifi.startTcpServer(8505)) Serial.println("TCP server listening on port 8505");
+  if (wifi.tcpServer(8505)) Serial.println("TCP server listening on port 8505");
   else Serial.println("Failed to start TCP server!");
 }
 
