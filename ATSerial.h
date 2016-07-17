@@ -32,27 +32,23 @@
 #define UART_DELAY 100
 #endif
 
+#ifndef UART_TIMEOUT
+#define UART_TIMEOUT 3000
+#endif
+
 #define DEFAULT_RX 0
 #define DEFAULT_TX 1
 
-#define DEFAULT_BAUD 115200
+#define DEFAULT_BAUD 57600
 
 #define DEFAULT_PORT 8468
 
 class ATSerial {
   protected:
     /**
-     * UART device.
+     * Software serial UART device.
      */
     SoftwareSerial *_uart;
-
-    /**
-     * Checks for the substring in the response received from the device.
-     *
-     * @param s the substring to be checked
-     * @return true if the provided substring is found in the response, else false
-     */
-    bool _checkResponse(String);
 
   public:
     /**
@@ -70,6 +66,34 @@ class ATSerial {
     ATSerial(uint16_t, uint16_t, long);
 
     /**
+     * Clears the software serial buffer.
+     */
+    void flush(void);
+
+    /**
+     * Checks for the substring in the response received from the device.
+     *
+     * @param s the substring to be checked
+     * @return true if the provided substring is found in the response, else false
+     */
+    bool checkResponse(const char*);
+
+    /**
+     * Waits until data is available to read
+     * or for a period of UART_TIMEOUT milliseconds.
+     *
+     * @return the number of bytes available, -1 if timed out
+     */
+    int available(void);
+
+    /**
+     * Reads a string from the device.
+     *
+     * @retrun the string read
+     */
+    char* readString(void);
+
+    /**
      * Sends the command to test AT startup.
      *
      * @return true if device responds with OK, false on error
@@ -84,14 +108,6 @@ class ATSerial {
     bool restart(void);
 
     /**
-     * Checks if any bytes are available from the device and
-     * returns the number of bytes available.
-     *
-     * @return number of bytes available
-     */
-    int available(void);
-
-    /**
      * Reads next character.
      *
      * @return character read, -1 if none available
@@ -99,11 +115,11 @@ class ATSerial {
     int read(void);
 
     /**
-     * Reads the characters into a string buffer.
+     * Writes a string to the device.
      *
-     * @return the string read
+     * @param s the string to be written
+     * @return the number of bytes written
      */
-    String readString(void);
+    int write(const char*);
 };
-
 #endif
