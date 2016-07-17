@@ -25,31 +25,6 @@
 #include "ATSerial.h"
 
 /**
- * Checks for the substring in the response received from the device.
- *
- * @param s the substring to be checked
- * @return true if the provided substring is found in the response, else false
- */
-bool ATSerial::_checkResponse(String s) {
-  if (_uart->available()) {
-    String r = _uart->readString();
-
-    /*Serial.println("{");
-    Serial.println(r);
-    Serial.println("}");*/
-
-    int rLen = r.length(), sLen = s.length();
-    int max = rLen - sLen, i = 0;
-
-    for (i=0; i<= max; i++) {
-      if (s == s.substring(i, i+sLen)) return true;
-    }
-  }
-
-  return false;
-}
-
-/**
  * Uses default parameters.
  */
 ATSerial::ATSerial(void) {
@@ -60,13 +35,111 @@ ATSerial::ATSerial(void) {
 /**
  * Overrides the default parameters.
  *
- * @param rx   the RX pin
- * @param tx   the TX pin
+ * @param rx the RX pin
+ * @param tx the TX pin
  * @param baud BAUD rate
  */
 ATSerial::ATSerial(uint16_t rx, uint16_t tx, long baud) {
   _uart = new SoftwareSerial(rx, tx);
   _uart->begin(baud);
+}
+
+/**
+ * Clears the software serial buffer.
+ */
+void ATSerial::flush(void) {
+  while (0 < _uart->read()){}
+}
+
+/**
+ * Waits until data is available to read
+ * or for a period of UART_TIMEOUT milliseconds.
+ *
+ * @return the number of bytes available, -1 if timed out
+ */
+int ATSerial::available(void) {
+  int bytes=-1, millis=UART_DELAY;
+
+  while (millis < UART_TIMEOUT) {
+    bytes = _uart->available();
+    if (bytes > 0) break;
+
+    millis = millis + UART_DELAY;
+    delay(UART_DELAY);
+  }
+
+  return bytes;
+}
+
+/**
+ * Checks for the substring in the response received from the device.
+ *
+ * @param s the substring to be checked
+ * @return true if the provided substring is found in the response, else false
+ */
+bool ATSerial::checkResponse(const char* s) {
+  int match=0, index=0, ssize=strlen(s), ch;
+
+  int bytes = available();
+  if (bytes <= 0) return false;
+
+  while ((ch=_uart->read())) {
+    if (ch < 0) break;
+
+    Serial.print((char)ch);
+    Serial.print("=");
+    Serial.println(s[index]);
+
+    if (ch == (int)s[index]) {
+      match++;
+
+    } else if (ch == (int)s[0]) {
+      match = 1;
+      index = 0;
+
+    } else {
+      match = 0;
+      index = -1;
+    }
+
+    if (match == ssize) {
+      flush();
+      return true;
+    }
+
+    index++;
+  }
+
+  flush();
+  return false;
+}
+
+/**
+ * Waits until bytes are available and
+ * reads the bytes into a string buffer.
+ *
+ * @return the string read
+ */
+char* ATSerial::readString(void) {
+  int bytes = available();
+  if (bytes <= 0) return NULL;
+
+  int ch=-1, index=0;
+
+  char* s = (char*) malloc(bytes + 1);
+
+  while ((ch = _uart->read()) >= 0) {
+    s[index] = (char)ch;
+    Serial.println((char)ch);
+    index++;
+
+    if (index >= bytes) {
+      s[index] = '\0';
+      break;
+    }
+  }
+
+  return s;
 }
 
 /**
@@ -76,8 +149,7 @@ ATSerial::ATSerial(uint16_t rx, uint16_t tx, long baud) {
  */
 bool ATSerial::isOkay(void) {
   _uart->write("AT\r\n");
-  delay(UART_DELAY);
-  return _checkResponse("AT\r\nOK\n");
+  return checkResponse("OK\r\n");
 }
 
 /**
@@ -87,18 +159,7 @@ bool ATSerial::isOkay(void) {
  */
 bool ATSerial::restart(void) {
   _uart->write("AT+RST\r\n");
-  delay(1000);
-  return _checkResponse("OK");
-}
-
-/**
- * Checks if any bytes are available from the device and
- * returns the number of bytes available.
- *
- * @return number of bytes available
- */
-int ATSerial::available(void) {
-  return _uart->available();
+  return checkResponse("OK\r\n");
 }
 
 /**
@@ -111,10 +172,11 @@ int ATSerial::read(void) {
 }
 
 /**
- * Reads the characters into a string buffer.
+ * Writes a string to the device.
  *
- * @return the string read
+ * @param s the string to be written
+ * @return the number of bytes written
  */
-String ATSerial::readString(void) {
-  return _uart->readString();
+int ATSerial::write(const char* s) {
+  return _uart->write(s);
 }

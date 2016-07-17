@@ -59,9 +59,9 @@ class ATSerial {
     /**
      * Overrides the default parameters.
      *
-     * @param uint16_t rx   the RX pin
-     * @param uint16_t tx   the TX pin
-     * @param long baud     BAUD rate
+     * @param rx the RX pin
+     * @param tx the TX pin
+     * @param baud BAUD rate
      */
     ATSerial(uint16_t, uint16_t, long);
 
@@ -69,14 +69,6 @@ class ATSerial {
      * Clears the software serial buffer.
      */
     void flush(void);
-
-    /**
-     * Checks for the substring in the response received from the device.
-     *
-     * @param s the substring to be checked
-     * @return true if the provided substring is found in the response, else false
-     */
-    bool checkResponse(const char*);
 
     /**
      * Waits until data is available to read
@@ -87,9 +79,18 @@ class ATSerial {
     int available(void);
 
     /**
-     * Reads a string from the device.
+     * Checks for the substring in the response received from the device.
      *
-     * @retrun the string read
+     * @param s the substring to be checked
+     * @return true if the provided substring is found in the response, else false
+     */
+    bool checkResponse(const char*);
+
+    /**
+     * Waits until bytes are available and
+     * reads the bytes into a string buffer.
+     *
+     * @return the string read
      */
     char* readString(void);
 
