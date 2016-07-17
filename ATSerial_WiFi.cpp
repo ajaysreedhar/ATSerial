@@ -28,52 +28,96 @@ ATSerial_WiFi::ATSerial_WiFi(void):ATSerial() {}
 ATSerial_WiFi::ATSerial_WiFi(uint16_t rx, uint16_t tx, long baud): ATSerial(rx, tx, baud) {}
 
 /**
- * Joins an access point.
+ * Quits access point.
  *
- * @param ssid    the access point ssid
- * @param passw   password for the ssid
- *
- * @return true if connection successful, else false
+ * @return true if quit, else false
  */
-bool ATSerial_WiFi::joinAP(char* ssid, char* passw) {
-  _uart->write("AT+CWMODE=1\r\n");
-  delay(UART_DELAY);
-
-  if (! _checkResponse("OK\n")) return false;
-
-  char s[64];
-  snprintf(s, 64, "AT+CWJAP=\"%s\",\"%s\"\r\n", ssid, passw);
-  _uart->write(s);
-
-  while (! _uart->available()){}
-
-  return _checkResponse("OK\n");
+bool ATSerial_WiFi::quitAp(void) {
+  _uart->write("AT+CWQAP\r\n");
+  return checkResponse("OK\r\n");
 }
 
+/**
+ * Joins an access point.
+ *
+ * @param ssid the access point ssid
+ * @param passw password for the ssid
+ * @return true if connection successful, else false
+ */
+bool ATSerial_WiFi::joinAp(char* ssid, char* passw) {
+  // Close active connections.
+  quitAp();
 
-bool ATSerial_WiFi::setAP(char* ssid, char* passw, uint16_t chn, uint16_t ecn) {
+  // Set mode to STA.
+  _uart->write("AT+CWMODE=1\r\n");
+  if (!checkResponse("OK\r\n")) return false;
+
+  char* s = (char*) malloc(64);
+  snprintf(s, 64, "AT+CWJAP=\"%s\",\"%s\"\r\n", ssid, passw);
+  _uart->write(s);
+  free(s);
+
+  while (true) {
+    s = readString();
+
+    if (NULL != strstr(s, "FAIL")) return false;
+    if (NULL != strstr(s, "WIFI CONNECTED")) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Sets up an access point.
+ *
+ * @param ssid the new SSID
+ * @param passw new password
+ * @param chn channel number
+ * @param ecn encryption
+ *return true if setup successfully, false otherwise
+ */
+bool ATSerial_WiFi::setAp(char* ssid, char* passw, uint16_t chn, uint16_t ecn) {
   _uart->write("AT+CWMODE=2\r\n");
-  delay(UART_DELAY);
-
-  if (! _checkResponse("OK\n")) return false;
+  if (!checkResponse("OK\r\n")) return false;
 
   char s[64];
   snprintf(s, 64, "AT+CWSAP=\"%s\",\"%s\",%d,%d\r\n", ssid, passw, chn, ecn);
   _uart->write(s);
-  delay(1000);
-
-  return _checkResponse("OK\n");
+  return checkResponse("OK\r\n");
 }
 
-bool ATSerial_WiFi::tcpServer(uint16_t port) {
+/**
+ * Sets connection mode to single connection.
+ *
+ * @return true if set successfully, false otherwise
+ */
+bool ATSerial_WiFi::singleCipmux(void) {
+  _uart->write("AT+CIPMUX=0\r\n");
+  return checkResponse("OK\r\n");
+}
+
+/**
+ * Sets connection mode to multiple connections.
+ *
+ * @return true if set successfully, false otherwise
+ */
+bool ATSerial_WiFi::multiCipmux(void) {
   _uart->write("AT+CIPMUX=1\r\n");
-  delay(UART_DELAY);
-  if ( ! _checkResponse("OK\n") ) return false;
+  return checkResponse("OK\r\n");
+}
+
+/**
+ * Start a TCP server at a specified port.
+ *
+ * @param port the port number
+ * @return true if started successfully, false otherwise
+ */
+bool ATSerial_WiFi::tcpServer(uint16_t port) {
+  if (!multiCipmux()) return false;
 
   char s[64];
   snprintf(s, 64, "AT+CIPSERVER=1,%d\r\n", port);
   _uart->write(s);
-  delay(UART_DELAY);
 
-  return _checkResponse("OK\n");
+  return checkResponse("OK\n");
 }

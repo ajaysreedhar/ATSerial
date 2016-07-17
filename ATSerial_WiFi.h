@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 #ifndef __AT_SERIAL_WIFI_H__
 #define __AT_SERIAL_WIFI_H__
 
@@ -33,8 +33,53 @@ class ATSerial_WiFi: public ATSerial {
     ATSerial_WiFi(void);
     ATSerial_WiFi(uint16_t, uint16_t, long);
 
-    bool joinAP(char*, char*);
-    bool setAP(char*, char*, uint16_t, uint16_t);
+    /**
+     * Quits access point.
+     *
+     * @return true if quit, else false
+     */
+    bool quitAp(void);
+
+    /**
+     * Joins an access point.
+     *
+     * @param ssid the access point ssid
+     * @param passw password for the ssid
+     * @return true if connection successful, else false
+     */
+    bool joinAp(char*, char*);
+
+    /**
+     * Sets up an access point.
+     *
+     * @param ssid the new SSID
+     * @param passw new password
+     * @param chn channel number
+     * @param ecn encryption
+     *return true if setup successfully, false otherwise
+     */
+    bool setAp(char*, char*, uint16_t, uint16_t);
+
+    /**
+     * Sets connection mode to single connection.
+     *
+     * @return true if set successfully, false otherwise
+     */
+    bool singleCipmux(void);
+
+    /**
+     * Sets connection mode to multiple connections.
+     *
+     * @return true if set successfully, false otherwise
+     */
+    bool multiCipmux(void);
+
+    /**
+     * Start a TCP server at a specified port.
+     *
+     * @param port the port number
+     * @return true if started successfully, false otherwise
+     */
     bool tcpServer(uint16_t);
 };
 
