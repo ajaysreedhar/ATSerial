@@ -1,7 +1,9 @@
 #include <ATSerial_WiFi.h>
 
+// BAUD rate may vary from device to device.
+// Choose accordingly.
 Serial.begin(57600);
-ATSerial_WiFi wifi(6, 7);
+ATSerial_WiFi wifi(6, 7, 57600);
 
 void setup() {
 
