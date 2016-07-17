@@ -68,7 +68,7 @@ bool ATSerial_WiFi::joinAp(char* ssid, char* passw) {
 }
 
 /**
- * Sets up an access point.
+ * Creates a new access point.
  *
  * @param ssid the new SSID
  * @param passw new password
@@ -76,7 +76,7 @@ bool ATSerial_WiFi::joinAp(char* ssid, char* passw) {
  * @param ecn encryption
  *return true if setup successfully, false otherwise
  */
-bool ATSerial_WiFi::setAp(char* ssid, char* passw, uint16_t chn, uint16_t ecn) {
+bool ATSerial_WiFi::createAp(char* ssid, char* passw, uint16_t chn, uint16_t ecn) {
   _uart->write("AT+CWMODE=2\r\n");
   if (!checkResponse("OK\r\n")) return false;
 
@@ -91,7 +91,7 @@ bool ATSerial_WiFi::setAp(char* ssid, char* passw, uint16_t chn, uint16_t ecn) {
  *
  * @return true if set successfully, false otherwise
  */
-bool ATSerial_WiFi::singleCipmux(void) {
+bool ATSerial_WiFi::setSingleCipmux(void) {
   _uart->write("AT+CIPMUX=0\r\n");
   return checkResponse("OK\r\n");
 }
@@ -101,7 +101,7 @@ bool ATSerial_WiFi::singleCipmux(void) {
  *
  * @return true if set successfully, false otherwise
  */
-bool ATSerial_WiFi::multiCipmux(void) {
+bool ATSerial_WiFi::setMultiCipmux(void) {
   _uart->write("AT+CIPMUX=1\r\n");
   return checkResponse("OK\r\n");
 }
@@ -112,8 +112,8 @@ bool ATSerial_WiFi::multiCipmux(void) {
  * @param port the port number
  * @return true if started successfully, false otherwise
  */
-bool ATSerial_WiFi::tcpServer(uint16_t port) {
-  if (!multiCipmux()) return false;
+bool ATSerial_WiFi::startTcpServer(uint16_t port) {
+  if (!setMultiCipmux()) return false;
 
   char s[64];
   snprintf(s, 64, "AT+CIPSERVER=1,%d\r\n", port);

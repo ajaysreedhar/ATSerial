@@ -50,7 +50,7 @@ class ATSerial_WiFi: public ATSerial {
     bool joinAp(char*, char*);
 
     /**
-     * Sets up an access point.
+     * Creates a new access point.
      *
      * @param ssid the new SSID
      * @param passw new password
@@ -58,21 +58,21 @@ class ATSerial_WiFi: public ATSerial {
      * @param ecn encryption
      *return true if setup successfully, false otherwise
      */
-    bool setAp(char*, char*, uint16_t, uint16_t);
+    bool createAp(char*, char*, uint16_t, uint16_t);
 
     /**
      * Sets connection mode to single connection.
      *
      * @return true if set successfully, false otherwise
      */
-    bool singleCipmux(void);
+    bool setSingleCipmux(void);
 
     /**
      * Sets connection mode to multiple connections.
      *
      * @return true if set successfully, false otherwise
      */
-    bool multiCipmux(void);
+    bool setMultiCipmux(void);
 
     /**
      * Start a TCP server at a specified port.
@@ -80,7 +80,7 @@ class ATSerial_WiFi: public ATSerial {
      * @param port the port number
      * @return true if started successfully, false otherwise
      */
-    bool tcpServer(uint16_t);
+    bool startTcpServer(uint16_t);
 };
 
 #endif
