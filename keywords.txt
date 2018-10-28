@@ -11,16 +11,16 @@ ATSerial	KEYWORD1
 ATSerial_WiFi	KEYWORD1
 
 # From ATSerial.h
-isOkay      KEYWORD2
-restart     KEYWORD2
-available   KEYWORD2
-read        KEYWORD2
-readString  KEYWORD2
+isOkay	KEYWORD2
+restart	KEYWORD2
+available	KEYWORD2
+read	KEYWORD2
+readString	KEYWORD2
 
 # From ATSerial_WiFi.h
-joinAP      KEYWORD2
-setAP       KEYWORD2
-tcpServer   KEYWORD2
+joinAP	KEYWORD2
+setAP	KEYWORD2
+tcpServer	KEYWORD2
 
 # Literals
 RXDEFAULT	LITERAL1
